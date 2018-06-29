@@ -1,2 +1,5 @@
 *.zip
 .ipynb_checkpoints/
+train/
+train2/
+test/
