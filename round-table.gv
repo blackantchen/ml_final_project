@@ -1,0 +1,19 @@
+// The Round Table
+digraph {
+	node [shape=record]
+	IN [label="Input|images"]
+	"PRE-R" [label="ResNet50|{input:|output:}|{(224, 224, 3)|(2048)}"]
+	"PRE-X" [label="Xception|{input:|output:}|{(299, 299, 3)|(2048)}"]
+	"PRE-I" [label="InceptionV3|{input:|output:}|{(299, 299, 3)|(2048)}"]
+	IN -> "PRE-R"
+	IN -> "PRE-X"
+	IN -> "PRE-I"
+	L3 [label="Flatten|{input:|output:}"]
+	"PRE-R" -> L3
+	"PRE-X" -> L3
+	"PRE-I" -> L3
+	L4 [label="Dropout|Rate:|0.5"]
+	L5 [label="Output|{input:|output:}"]
+	L3 -> L4
+	L4 -> L5
+}
