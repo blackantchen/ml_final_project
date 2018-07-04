@@ -6,3 +6,4 @@ train2/
 test/
 pre-train/
 pre-test/
+*.h5
