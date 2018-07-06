@@ -9,3 +9,4 @@ pre-test/
 *.h5
 
 clean-train/
+out_train/
