@@ -17,3 +17,13 @@ clean-train/
 pics/
 
 model.png
+
+outliers/
+
+Untitled.ipynb
+find_outlier_debug.ipynb
+kaggle.json
+model-table.gv
+model-table.gv.pdf
+model_debug.ipynb
+sample_submission.csv
