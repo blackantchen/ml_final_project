@@ -18,7 +18,7 @@ pics/
 
 model.png
 
-outliers/
+outlier/
 *.csv
 
 Untitled.ipynb
@@ -26,5 +26,8 @@ find_outlier_debug.ipynb
 kaggle.json
 model-table.gv
 model-table.gv.pdf
-model_debug.ipynb
+models_debug.ipynb
 sample_submission.csv
+sigle-model.gv
+sigle-model.gv.pdf
+
