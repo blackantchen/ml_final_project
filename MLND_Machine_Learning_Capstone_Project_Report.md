@@ -157,7 +157,7 @@ LogLoss是一个连续值, 取值范围 是0至无穷大, 相比Accuracy, LogLos
 - Top-N 里既没有猫，也没有狗
 - Top-N 里只有猫，但图片被标注为狗，或Top-N 里只有狗，但标注为猫
 
-​         使用预训练模型ResNet50, Xception, InceptionResNetV2分别对训练集进行预测，生成各自的异常图片集，然后取3个模型的并集， 经人工辨认后，将异常值从训练集中剔除。
+​         使用预训练模型ResNet50, Xception, InceptionResNetV2分别对训练集进行预测，生成各自的异常图片集，然后取3个模型的并集， 经人工辨认后，最终确定61张图片为异常图片，并将异常图片从训练集中剔除。
 
 非猫狗图片
 
@@ -221,13 +221,15 @@ LogLoss是一个连续值, 取值范围 是0至无穷大, 相比Accuracy, LogLos
 
 - 图3-3-1
 
-  ![]()
+  ![](D:\MachineLearn\ml2017\ml_final_project\pics\sigle_mode.JPG)
 
 #### 3.3.2 特征提取
 
 ​        如前文所述，项目使用迁移学习方法，基于预训练模型进行微调，以ResNet50为例，其原理如图3-3-2,  Xception 和 InceptionResNetV2 使用同样的方法构建模型
 
 - 图3-3-2
+
+  ![](D:\MachineLearn\ml2017\ml_final_project\pics\transfer_study.JPG)
 
 ​        以ResNet50为例，Keras Application 模块提供的ResNet50模型API， 传递参数 include_top = True 时，保留顶层的3个全连接网络。这个原始的预训练模型，输入为(224,224,3)的张量，输出层的激活函数是softmax，最终输出为ImageNet 1000类概率。 迁移学习是，传递参数 include_top = False，不使用预训练模型的顶层3个全连接层，输出的是预训练模型从训练集中提取的特征。
 
@@ -243,7 +245,14 @@ LogLoss是一个连续值, 取值范围 是0至无穷大, 相比Accuracy, LogLos
 
 ​       设置验证集的大小为20%, 即每一轮训练，20%的数据作为验证集，80%数据作为训练集. 程序设置了EarlyStopping ，监视 'val_loss', 当val_loss连续8轮没有改善时，则结束训练.
 
-> 训练结果分析，并选择最终模型以对测试集进行预测
+
+![](D:\MachineLearn\ml2017\ml_final_project\pics\resnet_fit.png)
+
+
+
+![](D:\MachineLearn\ml2017\ml_final_project\pics\xception_fit.png)
+
+![](D:\MachineLearn\ml2017\ml_final_project\pics\inception_resnet_v2.png)
 
 ​       从图3-3-3可以看出， InceptionResNetV2 模型的训练效果最好，因此项目将选择 InceptionResNetV2 作为最终的预训练模型，使用基于 InceptionResNetV2 的模型对测试集进行。
 
@@ -266,14 +275,22 @@ LogLoss是一个连续值, 取值范围 是0至无穷大, 相比Accuracy, LogLos
 
 ### 4.2 结果分析
 
-     - Xception 模型得到 0.05458 的分数，显著优于 inception。相对 inception 的 0.07739分，改进幅度为 29.1%。
-- ResNet50 模型的得分与 xception 模型十分接近。
-- Inception模型的分数可以在排行榜中排名第 88 位，ResNet50 模型的分数能排在 92 位，而 inception 模型的分数只能排在 226 位。
+| 模型              | 分数    |
+| ----------------- | ------- |
+| ResNet50          | 0.05470 |
+| Xception          | 0.04126 |
+| InceptionResNetV2 | 0.03847 |
+
+
+
+- ResNet50 模型得到 0.05470 的分数，在3个模型中表现最差。
+- Xception 模型的得分是0.04126，显著优于 ResNet50, 提升幅度约 24.6%。
+- InceptionResNetV2 模型的分数可以在排行榜中排名第 12 位，Xception 模型的分数能排在 18 位，而 ResNet50 模型的分数只能排在 92 位。
 
 ## 5 项目结论
 ### 5.1 结果可视化
 
-​       从测试集随机挑选 一些图 片进 行 可视化，如图5-1。可以看到，对于 大部分测试图 片，模型不 仅判断正确， 而且对结果 非常肯定。测试集 里 也混有“ 非猫 非狗” 图 片，如12099.jpg，模型虽然判断为狗，但不 太肯定（概率只有51%），这也算合理 
+​       从测试集随机挑选 一些图 片进 行 可视化，如图5-1。可以看到，对于 大部分测试图 片，模型不仅判断正确， 而且对结果非常肯定。测试集里也混有“ 非猫非狗” 图片，如12099.jpg，模型虽然判断为狗，但不太肯定（概率只有51%），
 
 
 
