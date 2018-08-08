@@ -6,7 +6,7 @@
 
 Chen Yifan
 
-July 30th, 2018
+Aug 8th, 2018
 
 
 
@@ -260,20 +260,7 @@ LogLoss是一个连续值, 取值范围 是0至无穷大, 相比Accuracy, LogLos
 
 ​     读取测试集的特征文件后，输入到训练后的模型对进行预测，并将预测结果按要求写入csv文件中。由于输出为预测为狗的概率，评价指标是对数损失，因此对输出进行截取会稍微改善最终的结果。
 
-​       使用模型进行预测，将结果写入csv文件。上传到 Kaggle  竞赛项目，获得的得分是 0.03814, 排名在11名。模型的表现很出色，完全达成了LogLoss分数小于0.056,  排名100以内的既定目标.
-
-### 3.4 完善
-
-​       单模型的结果即达到了预期，下一步将使用多模型进行优化。
-
-## 4 结果
-### 4.1 模型的评价与验证
-
-​      从单个模型来看，项目使用的三个模型都属于卷积神经网络，他们构建网络的思路却不相同； ResNet提出了残差连接的概念，使网络用来训练残差而非卷积输出，优点是可以令网络具有非常深的深度的同时不至于难以优化，从而达到更好的性能； Xception 和 InceptionResNetV2 都是由Inception发展而来，其中，Xception基于Ineption V3 网络，其特点是采 用 一种称为深度 方向上的可分离卷积 方法，即先对每个通道分别卷积，再使 用1×1逐点进 行 卷积，同时也应 用了 残差的结构；InceptionResNetV2主要利  用残差来改进Inception V3的结构，基本思想就是使 用 Inception module替代原本ResNet中的卷积单元 .
-
-​       
-
-### 4.2 结果分析
+​       使用这3个模型分别对测试集进行预测，将结果写入csv文件，上传到 Kaggle  竞赛项目，3个模型获得的分数如下：
 
 | 模型              | 分数    |
 | ----------------- | ------- |
@@ -281,18 +268,62 @@ LogLoss是一个连续值, 取值范围 是0至无穷大, 相比Accuracy, LogLos
 | Xception          | 0.04126 |
 | InceptionResNetV2 | 0.03847 |
 
+InceptionResNetV2 模型的预测结果最好，获得的得分是 0.03847, 排名在12名。另2个模型的表现也很出色，完全达成了 LogLoss 分数小于0.056,  排名100以内的既定目标.
 
+### 3.4 完善
+
+​       InceptionResNetV2 模型的效果最好，但三个单预训练模型的结果均达到了预期，下一步将使用多模型进行优化。这三个网络的网络结构差异较大，对图像特征的提取也必然存在差异,  从特征层面进行组合可以更全面地概括一个图形的内容，从而提高模型的性能。
+
+组合模型结构如下图：
+
+![](D:\MachineLearn\ml2017\ml_final_project\pics\multi_model.PNG)
+
+​       训练集和测试集经三个预训练模型分别输出2048维、2048维和1536维特征，将这些特征组合在⼀起产⽣新的样本，每个新样本包含5632维特征。分类器依然使⽤⼀个Dropout层加⼀个Sigmoid输出层， ⽤训练集对应新特征样本训练分类器，训练完成后对测试机的新特征集进行预测。
+
+模型训练曲线如下：
+
+![](D:\MachineLearn\ml2017\ml_final_project\pics\composition_model.png)
+
+## 4 结果
+
+### 4.1 模型的评价与验证
+
+​      从单个模型来看，项目使用的三个模型都属于卷积神经网络，他们构建网络的思路却不相同； ResNet提出了残差连接的概念，使网络用来训练残差而非卷积输出，优点是可以令网络具有非常深的深度的同时不至于难以优化，从而达到更好的性能； Xception 和 InceptionResNetV2 都是由Inception发展而来，其中，Xception基于Ineption V3 网络，其特点是采 用 一种称为深度 方向上的可分离卷积 方法，即先对每个通道分别卷积，再使 用1×1逐点进 行 卷积，同时也应 用了 残差的结构；InceptionResNetV2主要利  用残差来改进Inception V3的结构，基本思想就是使 用 Inception module替代原本ResNet中的卷积单元 .
+
+​       相⽐任何单⼀模型，从多个模型中提取特征并将其组合的⽅法可以全⾯利⽤不同⽹络提取的不同信息，因⽽可以得到更好的泛化能⼒。
+
+- 表4-1
+
+| 模型              | 分数    |
+| ----------------- | ------- |
+| ResNet50          | 0.05470 |
+| Xception          | 0.04126 |
+| InceptionResNetV2 | 0.03847 |
+| Composition-Model | 0.03649 |
+
+### 4.2 结果分析
 
 - ResNet50 模型得到 0.05470 的分数，在3个模型中表现最差。
 - Xception 模型的得分是0.04126，显著优于 ResNet50, 提升幅度约 24.6%。
 - InceptionResNetV2 模型的分数可以在排行榜中排名第 12 位，Xception 模型的分数能排在 18 位，而 ResNet50 模型的分数只能排在 92 位。
+- 组合模型 Composition-Model 的分数为0.03649, 这个得分超过这个竞赛的第七名，同时比表现最好的单模型 InceptionResNetV2 得分提高了 5.1%, 在 InceptionResNetV2 排名已经非常靠前的情况，足可验证组合模型的性能非常出色。因此本项目选择组合模型作为最终模型。
 
 ## 5 项目结论
 ### 5.1 结果可视化
 
-​       从测试集随机挑选 一些图 片进 行 可视化，如图5-1。可以看到，对于 大部分测试图 片，模型不仅判断正确， 而且对结果非常肯定。测试集里也混有“ 非猫非狗” 图片，如12099.jpg，模型虽然判断为狗，但不太肯定（概率只有51%），
+​       从测试集随机挑选 一些图片进行可视化，如图5-1。可以看到，对于大部分测试图片, 模型不仅判断正确, 而且对结果非常肯定。如 '3674.jpg', '6657.jpg' 等背景复杂的图片，模型也能给出非常肯定的预测。
 
+- 图5-1 测试结果展示1
 
+  ![](D:\MachineLearn\ml2017\ml_final_project\pics\preds_1.png)
+
+- 图5-1 测试结果展示2
+
+  ![](D:\MachineLearn\ml2017\ml_final_project\pics\preds_2.png)
+
+预测概率的大部分都分布在 0~0.2, 和0.8~1.0的区间内，模型的表现已经达到了预期
+
+![](D:\MachineLearn\ml2017\ml_final_project\pics\preds_rate.png)
 
 ### 5.2 思考
 
@@ -303,5 +334,16 @@ LogLoss是一个连续值, 取值范围 是0至无穷大, 相比Accuracy, LogLos
 
 
 ## 参考文献
-[^1]: Large Scale Visual Recognition Challenge 2016
-[^2]: 
+[1] Large Scale Visual Recognition Challenge 2016
+[2] Pierre Sermanet, Soumith Chintala and Yann LeCun. Convolutional Neural Networks
+Applied to House Numbers Digit Classification. The Courant Institute of Mathematical
+Sciences - New York Universit, 2013.
+[3] Christian Szegedy, Vincent Vanhoucke, Sergey Ioffe, Jonathon Shlens. Rethinking the
+Inception Architecture for Computer Vision. arXiv:1512.00567v3 [cs.CV] 11 Dec 2015.
+[4] Kaiming He Xiangyu Zhang Shaoqing Ren. Deep Residual Learning for Image
+Recognition. Microsoft Research, 2015
+[5] Franc ̧ois Chollet. Xception: Deep Learning with Depthwise Separable Convolutions.
+arXiv:1610.02357v3 [cs.CV] 4 Apr 2017.
+[6] Christian Szegedy, Sergey Ioffe, Vincent Vanhoucke. Inception-v4, Inception-ResNet
+and the Impact of Residual Connections on Learning. arXiv:1602.07261v2 [cs.CV] 23 Aug
+2016
