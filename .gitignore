@@ -19,6 +19,7 @@ pics/
 model.png
 
 outliers/
+*.csv
 
 Untitled.ipynb
 find_outlier_debug.ipynb
