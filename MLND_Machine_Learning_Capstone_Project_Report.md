@@ -23,7 +23,7 @@ Aug 8th, 2018
 
 ​         <Dogs vs. Cats Redux:Kernel Edition> 是kaggle的一个竞赛项目，目标是建立一个模型，将给定的图片分辨为猫或狗。这是一个图像分类问题，是典型的计算机视觉问题。
 
-​        图像分类是计算机视觉研究中的经典问题，基于图像分类的研究成果和方法广泛应用在诸如目标检测已经图像摘要生成等领域。从 2010 年开始举办的 ImageNet 大规模视觉识别挑战赛[^1] (ILSVRC)代表了这些领域的世界先进水平。2012年，以卷积神经网络[^2] (Convolutional Neural Network, CNN)为代表的深度学习方法开始在挑战赛中独领风骚；此后几年，基于CNN的神经网络模型不断有新的研究成果出现，并且连续几年获得挑战赛冠军，可见CNN在计算机视觉领域的巨大优势。
+​        图像分类是计算机视觉研究中的经典问题，基于图像分类的研究成果和方法广泛应用在诸如目标检测已经图像摘要生成等领域。从 2010 年开始举办的 ImageNet 大规模视觉识别挑战赛[1] (ILSVRC)代表了这些领域的世界先进水平。2012年，以卷积神经网络[2] (Convolutional Neural Network, CNN)为代表的深度学习方法开始在挑战赛中独领风骚；此后几年，基于CNN的神经网络模型不断有新的研究成果出现，并且连续几年获得挑战赛冠军，可见CNN在计算机视觉领域的巨大优势。
 
 ​        作为一个典型的图像分类问题，本项目计划使用CNN网络来构建模型，考虑到训练CNN网络需要用到巨大的计算资源，拟采用Keras的Applications模块提供了带有预训练权重的深度学习模型以减少对计算资源的要求. Keras是一个高层神经网络API，Keras由纯Python编写而成并基[Tensorflow](https://github.com/tensorflow/tensorflow)、[Theano](https://github.com/Theano/Theano)以及[CNTK](https://github.com/Microsoft/cntk)后端。Keras提供的应用于图像分类的预训练模型，其权重训练自ImageNet。
 
@@ -58,7 +58,9 @@ $$
 
 - log 是自然对数
 
-LogLoss是一个连续值, 取值范围 是0至无穷大, 相比Accuracy, LogLoss能对模型提供更细致的评价. 在深度学习成为主流的今天, 模型对图像分类的准确率都非常高, 模型之间的性能差异较小, 使用LogLoss作为评价指标能以更细微的视角观察到模型性能之间差异
+​       LogLoss是一个连续值, 取值范围 是0至无穷大, 当类别标签 $y_i$ 为1且模型的预测概率 $\hat{y_i}$ 接近于1.0时，LogLoss值接近于0；当 $y_i$ 为 0 且模型的预测概率 $\hat{y_i}$ 接近于 0 时，LogLoss值接近于0；可见，LogLoss 值越小，模型的表现越好。
+
+​       相比Accuracy, LogLoss能对模型提供更细致的评价. 在深度学习成为主流的今天, 模型对图像分类的准确率都非常高, 模型之间的性能差异较小, 使用LogLoss作为评价指标能以更细微的视角观察到模型性能之间差异
 
 
 
@@ -67,7 +69,9 @@ LogLoss是一个连续值, 取值范围 是0至无穷大, 相比Accuracy, LogLos
 
 ​         项目的训练集和测试集全部来自于Kaggle竞赛项目《Dogs vs. Cats Redux: Kernels 》 ，图片分为train和test两个数据集 ，绝大部分都是各种猫和狗的图片；train中共有25000张图片，其中猫和狗各有12500张；所有图片都已经在文件名中标注为猫或狗，如cat.xxx.jpg, dog.xxx.jpg, 由于猫狗比例相等，因此模型不需要考虑类别不平衡问题。
 
-测试集中包含12500张未标注的图片, 图片内容都是各种猫和狗.
+​       测试集中包含12500张未标注的图片, 图片内容都是各种猫和狗.
+
+​       由于数据集包含的图片很多，由人工逐张审阅辨认是不现实的，也与本课程的目标相背；虽然从训练集中随机抽查的几十张图片没有发现异常，但并不能代表整个数据集都是正常值；在数据预处理阶段，利用在ImageNet上训练过的预训练模型对数据集进行预测，然后根据预测结果筛选出异常图片，并将异常值从训练集中剔除，这种方法对本项目而言是有效且必要的。
 
 
 
@@ -83,9 +87,9 @@ LogLoss是一个连续值, 取值范围 是0至无穷大, 相比Accuracy, LogLos
 
 - 分辨率分布图
 
-  ![](D:\MachineLearn\ml2017\ml_final_project\pics\fbl.png)
+  ![](D:\MachineLearn\ml2017\ml_final_project\pics\image_size_distribution.png)
 
-  
+  如上图所示，样本的分辨率各不相同，在将图像数据输⼊模型之前，需要按照模型对分辨率的要求进⾏调整。 
 
 ### 2.3 算法和技术
 
@@ -126,7 +130,7 @@ LogLoss是一个连续值, 取值范围 是0至无穷大, 相比Accuracy, LogLos
 ## 3 方法
 ### 3.1 模型选择
 
-​         如表-1所示, 在 ImageNet[^3] 竞赛中取得优异成绩的CNN模型, 其深度常常超过100层, 从零开始训练一个类似的模型, 并让模型习得优异的性能, 不仅需要大量计算资源, 同时也需要巨量的训练样本来训练模型;  使用 Keras 提供的带有预训练权重的模型来构建迁移学习模型, 既能大幅减少对计算资源的要求, 提供训练效率, 同时也能减少因项目训练集不够而引起模型"过拟合"的风险.
+​         如表-1所示, 在 ImageNet[3] 竞赛中取得优异成绩的CNN模型, 其深度常常超过100层, 从零开始训练一个类似的模型, 并让模型习得优异的性能, 不仅需要大量计算资源, 同时也需要巨量的训练样本来训练模型;  使用 Keras 提供的带有预训练权重的模型来构建迁移学习模型, 既能大幅减少对计算资源的要求, 提供训练效率, 同时也能减少因项目训练集不够而引起模型"过拟合"的风险.
 
 ​       Keras 提供的应用于图像分类的预训练模型，其权重训练自ImageNet. ImageNet数据集有超过1400万张被标注过的图片, 涵盖2万多个类别; 其中也包含许多猫狗的图片(包括狗品种118种, 猫7种), 利用训练自ImageNet的模型来预测猫狗类别是可行的. 在 Keras 提供的预训练模型中, ResNet50, Xception, InceptionResNetV2在实际应用中表现出非常好的性能,  且这些模型有公开模型结构和训练参数. 基于这些预训练模型, 采用迁移学习方法来实现本项目是一个可行的选择.
 
@@ -199,7 +203,9 @@ LogLoss是一个连续值, 取值范围 是0至无穷大, 相比Accuracy, LogLos
 | Xception          | 299*299      |
 | InceptionResNetv2 | 299*299      |
 
+​       此外，在将图像数据输入模型前，除了要调整图片尺寸外，还需对数据进行的预处理包括：[-1,1]区间的归一化（sample-wise)，零中心化(Zero-Centered)等等
 
+​        通过查看Keras application相关的源码可知，本项目使用的3个预训练模型都定义了相应的输入预处理函数(preprocess_input), 在将数据输入模型，必须先对图像数据执行模型定义的预处理函数。ResNet50模型，预处理函数先将图像channel由 RGB 转为 BGR, 然后对每个 color channel 施加零中心化(zero-center)，数据不进行缩放[3];  Xception 和 InceptionResNetV2 类似[4]，输入预处理需先将数据按sample-wise归一化至区间[-1,1].
 
 ### 3.3 执行过程
 
@@ -245,6 +251,8 @@ LogLoss是一个连续值, 取值范围 是0至无穷大, 相比Accuracy, LogLos
 
 ​       设置验证集的大小为20%, 即每一轮训练，20%的数据作为验证集，80%数据作为训练集. 程序设置了EarlyStopping ，监视 'val_loss', 当val_loss连续8轮没有改善时，则结束训练.
 
+- 图3-3-3
+
 
 ![](D:\MachineLearn\ml2017\ml_final_project\pics\resnet_fit.png)
 
@@ -280,7 +288,11 @@ InceptionResNetV2 模型的预测结果最好，获得的得分是 0.03847, 排�
 
 ​       训练集和测试集经三个预训练模型分别输出2048维、2048维和1536维特征，将这些特征组合在⼀起产⽣新的样本，每个新样本包含5632维特征。分类器依然使⽤⼀个Dropout层加⼀个Sigmoid输出层， ⽤训练集对应新特征样本训练分类器，训练完成后对测试机的新特征集进行预测。
 
+​       与单模型一样，设置验证集的大小为20%, 训练集为80%. 程序设置了EarlyStopping ，监视 'val_loss', 当val_loss连续8轮没有改善时，则结束训练.
+
 模型训练曲线如下：
+
+- 图3-4
 
 ![](D:\MachineLearn\ml2017\ml_final_project\pics\composition_model.png)
 
@@ -290,7 +302,11 @@ InceptionResNetV2 模型的预测结果最好，获得的得分是 0.03847, 排�
 
 ​      从单个模型来看，项目使用的三个模型都属于卷积神经网络，他们构建网络的思路却不相同； ResNet提出了残差连接的概念，使网络用来训练残差而非卷积输出，优点是可以令网络具有非常深的深度的同时不至于难以优化，从而达到更好的性能； Xception 和 InceptionResNetV2 都是由Inception发展而来，其中，Xception基于Ineption V3 网络，其特点是采 用 一种称为深度 方向上的可分离卷积 方法，即先对每个通道分别卷积，再使 用1×1逐点进 行 卷积，同时也应 用了 残差的结构；InceptionResNetV2主要利  用残差来改进Inception V3的结构，基本思想就是使 用 Inception module替代原本ResNet中的卷积单元 .
 
-​       相⽐任何单⼀模型，从多个模型中提取特征并将其组合的⽅法可以全⾯利⽤不同⽹络提取的不同信息，因⽽可以得到更好的泛化能⼒。
+​       如 图3-3-3，3个单模型在最多5轮训练后即已经收敛，基于 Xception 的模型在5轮候出现了比较明显的过拟合特征；3个单模型中，IncetpionResNetV2的最终val_loss 和 val_acc 值最好，且没有出现过拟合特征，模型具有很出色的泛化能力；
+
+​       如 图3-4 所示，组合模型在经过2轮训练后就已经收敛，之后出现了较为明显的过拟合特征；最终的 val_loss 和 val_acc 优于任一单模型的最终值。
+
+​       相⽐单模型，从多个模型中提取特征并将其组合的⽅法可以全⾯利⽤不同⽹络提取的不同信息，可以得到更高的 val_acc 和更低 val_loss。预测结果上传至kaggle网站后得分如表4-1
 
 - 表4-1
 
@@ -304,9 +320,16 @@ InceptionResNetV2 模型的预测结果最好，获得的得分是 0.03847, 排�
 ### 4.2 结果分析
 
 - ResNet50 模型得到 0.05470 的分数，在3个模型中表现最差。
+
 - Xception 模型的得分是0.04126，显著优于 ResNet50, 提升幅度约 24.6%。
+
 - InceptionResNetV2 模型的分数可以在排行榜中排名第 12 位，Xception 模型的分数能排在 18 位，而 ResNet50 模型的分数只能排在 92 位。
-- 组合模型 Composition-Model 的分数为0.03649, 这个得分超过这个竞赛的第七名，同时比表现最好的单模型 InceptionResNetV2 得分提高了 5.1%, 在 InceptionResNetV2 排名已经非常靠前的情况，足可验证组合模型的性能非常出色。因此本项目选择组合模型作为最终模型。
+
+- 组合模型 Composition-Model 的分数为0.03649, 这个得分超过这个竞赛的第七名，同时比表现最好的单模型 InceptionResNetV2 得分提高了 5.1%, 在 InceptionResNetV2 排名已经非常靠前的情况，足可验证组合模型的性能非常出色。
+
+  本项目基准模型设定的目标是LogLoss分数小于0.056, 排名进入Top-100以内. 参与实验的4个模型都达成了目标，4个模型中表现最好的组合模型将被选择作为本项目的最终模型。
+
+  
 
 ## 5 项目结论
 ### 5.1 结果可视化
@@ -331,6 +354,16 @@ InceptionResNetV2 模型的预测结果最好，获得的得分是 0.03847, 排�
 
 ​      使用迁移学习，相当于站在巨人的肩膀上可以走得更远。灵活运用Keras API是简单、快速、 高效完成项目的关键。
 
+​      
+
+### 改进
+
+​        因时间和资源的限制，有一些值得尝试的算法和技术在项目中并未实施。
+
+​        在生产图像数据时，通过设置 ImageDataGenerator 相关参数，对图像数据进行数据提升（Data Augment),  可达到扩充数据集的目的，有利于抑制过拟合，使得模型的泛化能力更好。
+
+​       还可以尝试在将多模型特征组合之后，使用PCA对特征进行降维，组合之后的特征集可能会包含重复，冗余的特征，直接训练分类器肯能会影响模型最终的性能。
+
 
 
 ## 参考文献
@@ -347,3 +380,9 @@ arXiv:1610.02357v3 [cs.CV] 4 Apr 2017.
 [6] Christian Szegedy, Sergey Ioffe, Vincent Vanhoucke. Inception-v4, Inception-ResNet
 and the Impact of Residual Connections on Learning. arXiv:1602.07261v2 [cs.CV] 23 Aug
 2016
+
+[7] ResNet50 model for Keras. Developed by JJ Allaire, François Chollet, RStudio, Google 
+
+[8] Xception V1 model for Keras. Developed by JJ Allaire, François Chollet, RStudio, Google 
+
+[9] Inception-ResNet v2 model, with weights trained on ImageNet. Developed by JJ Allaire, François Chollet, RStudio, Google 
