@@ -21,11 +21,11 @@ Aug 10th, 2018
 ## 1 定义
 ### 1.1 项目概述
 
-​         <Dogs vs. Cats Redux:Kernel Edition> 是kaggle的一个竞赛项目，目标是建立一个模型，将给定的图片分辨为猫或狗。这是一个图像分类问题，是典型的计算机视觉问题。
+​         **Dogs vs. Cats Redux:Kernel Edition** 是kaggle的一个竞赛项目，目标是建立一个模型，将给定的图片分辨为猫或狗。这是一个图像分类问题，是典型的计算机视觉问题。
 
 ​        图像分类是计算机视觉研究中的经典问题，基于图像分类的研究成果和方法广泛应用在诸如目标检测已经图像摘要生成等领域。从 2010 年开始举办的 ImageNet 大规模视觉识别挑战赛[1] (ILSVRC)代表了这些领域的世界先进水平。2012年，以卷积神经网络[2] (Convolutional Neural Network, CNN)为代表的深度学习方法开始在挑战赛中独领风骚；此后几年，基于CNN的神经网络模型不断有新的研究成果出现，并且连续几年获得挑战赛冠军，可见CNN在计算机视觉领域的巨大优势。
 
-​        作为一个典型的图像分类问题，本项目计划使用CNN网络来构建模型，考虑到训练CNN网络需要用到巨大的计算资源，拟采用Keras的Applications模块提供了带有预训练权重的深度学习模型以减少对计算资源的要求. Keras是一个高层神经网络API，Keras由纯Python编写而成并基[Tensorflow](https://github.com/tensorflow/tensorflow)、[Theano](https://github.com/Theano/Theano)以及[CNTK](https://github.com/Microsoft/cntk)后端。Keras提供的应用于图像分类的预训练模型，其权重训练自ImageNet。
+​        作为一个典型的图像分类问题，本项目计划使用CNN网络来构建模型，考虑到训练CNN网络需要用到巨大的计算资源，拟采用Keras的Applications模块提供了带有预训练权重的深度学习模型以减少对计算资源的要求. Keras是一个高层神经网络API，Keras由纯Python编写而成并基Tensorflow、Theano以及CNTK后端。Keras提供的应用于图像分类的预训练模型，其权重训练自ImageNet。
 
 ​         本项目采用Kaggle竞赛项目《Dogs vs. Cats Redux: Kernels 》的数据集，图片分为train和test两个数据集； train中共有25000张图片，其中猫和狗各有12500张 ，test中包含12500张未标注的图片. 对于test中的每一张图片，模型需要预测出图像是狗的概率(1.0 代表狗，0 代表猫).
 
